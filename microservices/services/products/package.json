@@ -1,0 +1,20 @@
+{
+  "name": "products-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.9.0",
+    "@apollo/subgraph": "^2.5.0",
+    "graphql": "^16.8.0",
+    "graphql-tag": "^2.12.6",
+    "pg": "^8.11.0",
+    "sequelize": "^6.33.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

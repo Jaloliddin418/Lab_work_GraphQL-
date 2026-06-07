@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+
+  postgres-users:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: users_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_users_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-products:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: products_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_products_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  users-service:
+    build: ./services/users
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: 4001
+      DATABASE_URL: postgresql://postgres:postgres@postgres-users:5432/users_db
+    depends_on:
+      postgres-users:
+        condition: service_healthy
+
+  products-service:
+    build: ./services/products
+    ports:
+      - "4002:4002"
+    environment:
+      PORT: 4002
+      DATABASE_URL: postgresql://postgres:postgres@postgres-products:5432/products_db
+    depends_on:
+      postgres-products:
+        condition: service_healthy
+
+  orders-service:
+    build: ./services/orders
+    ports:
+      - "4003:4003"
+    environment:
+      PORT: 4003
+      MONGODB_URI: mongodb://mongodb:27017/orders_db
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      USERS_SERVICE_URL: http://users-service:4001/graphql
+      PRODUCTS_SERVICE_URL: http://products-service:4002/graphql
+      ORDERS_SERVICE_URL: http://orders-service:4003/graphql
+    depends_on:
+      - users-service
+      - products-service
+      - orders-service
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_GATEWAY_URL: http://localhost:4000/graphql
+    depends_on:
+      - gateway
+
+volumes:
+  postgres_users_data:
+  postgres_products_data:
+  mongo_data:
