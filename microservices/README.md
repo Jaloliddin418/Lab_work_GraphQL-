@@ -265,27 +265,27 @@ query {
 graphql-microservices/
 |-- docker-compose.yml
 |-- gateway/
-|   |-- index.js          # Apollo Gateway - объединяет все сервисы
+|   |-- index.js          
 |   |-- package.json
 |   |-- Dockerfile
 |-- services/
 |   |-- users/
-|   |   |-- index.js      # GraphQL subgraph + Sequelize + PostgreSQL
+|   |   |-- index.js      
 |   |   |-- package.json
 |   |   |-- Dockerfile
 |   |-- products/
-|   |   |-- index.js      # GraphQL subgraph + Sequelize + PostgreSQL
+|   |   |-- index.js      
 |   |   |-- package.json
 |   |   |-- Dockerfile
 |   |-- orders/
-|       |-- index.js      # GraphQL subgraph + Mongoose + MongoDB
+|       |-- index.js      
 |       |-- package.json
 |       |-- Dockerfile
 |-- frontend/
     |-- src/
-    |   |-- App.js        # React компоненты с Apollo Client
-    |   |-- index.js      # Подключение Apollo Client
-    |   |-- index.css     # Стили
+    |   |-- App.js        
+    |   |-- index.js      
+    |   |-- index.css     
     |-- public/
     |   |-- index.html
     |-- package.json
